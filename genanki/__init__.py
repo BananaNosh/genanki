@@ -294,13 +294,14 @@ class Deck:
 
 
 class Package:
-  def __init__(self, deck_or_decks=None, media_files=None):
+  def __init__(self, deck_or_decks=None, media_files=None, media_path=None):
     if isinstance(deck_or_decks, Deck):
       self.decks = [deck_or_decks]
     else:
       self.decks = deck_or_decks
 
     self.media_files = media_files or []
+    self.media_path = media_path
 
   def write_to_file(self, file):
     dbfile, dbfilename = tempfile.mkstemp()
@@ -322,7 +323,7 @@ class Package:
       outzip.writestr('media', json.dumps(media_json))
 
       for i, f in media_json.items():
-        outzip.write(f, str(i))
+        outzip.write(os.path.join(self.media_path, f), str(i))
 
   def write_to_db(self, cursor, now_ts):
     cursor.executescript(APKG_SCHEMA)
